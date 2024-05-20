@@ -312,7 +312,7 @@ void solveBFS(Queue *queue, int **maze, int row, int column, Coords end) {
                 time_spent = (double)(s_time - start_time)/CLOCKS_PER_SEC;
                 printf("Time to find shortest path: %f\n", time_spent);
             } else {
-                printPath(current->node);
+                // printPath(current->node);
             }
             last = current->node;
             // printPath(current->node);
