@@ -181,6 +181,7 @@ void writePathToFile(FILE *file, Node *node);
  * @param row jumlah baris.
  * @param column jumlah kolom.
  * @param end titik akhir.
+ * @param mode mode operasi fungsi.
 */
-void solveBFS(Queue *queue, int **maze, int row, int column, Coords end);
+void solveBFS(Queue *queue, int **maze, int row, int column, Coords end, int mode);
 #endif

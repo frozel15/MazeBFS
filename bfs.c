@@ -207,7 +207,6 @@ void printPath(Node *node) {
 }
 
 void printMaze(int **maze, int row, int column, Node *path) {
-    // Create a copy of the maze
     char displayMaze[row][column + 1];
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < column; j++) {
@@ -221,10 +220,9 @@ void printMaze(int **maze, int row, int column, Node *path) {
                 displayMaze[i][j] = '.';
             }
         }
-        displayMaze[i][column] = '\0';  // Null-terminate the string for each row
+        displayMaze[i][column] = '\0';
     }
 
-    // Mark the path
     int count = 1;
     while (path->prev != NULL) {
         if (displayMaze[path->pos.y][path->pos.x] == '.') {
@@ -234,8 +232,6 @@ void printMaze(int **maze, int row, int column, Node *path) {
         path = path->prev;
     }
 
-    // Print the maze
-    // printf("\033[H\033[J");
     printf("\033[H");
     // system("cls");
 
@@ -244,8 +240,8 @@ void printMaze(int **maze, int row, int column, Node *path) {
     }
     printf("%d\n", count);
 
-    // Sleep for a short duration to create an animation effect
-    usleep(50000);
+    // Delay agar terlihat proses algoritma, optional
+    usleep(10000);
 }
 
 int pathLen(Node *node) {
@@ -287,7 +283,7 @@ void writePathToFile(FILE *file, Node *node) {
     fprintf(file, "(%d, %d) -> ", node->pos.x, node->pos.y);
 }
 
-void solveBFS(Queue *queue, int **maze, int row, int column, Coords end) {
+void solveBFS(Queue *queue, int **maze, int row, int column, Coords end, int mode) {
     FILE *allPath = fopen("allPath.txt", "w");
     fprintf(allPath, "");
     fclose(allPath);
@@ -298,35 +294,79 @@ void solveBFS(Queue *queue, int **maze, int row, int column, Coords end) {
     double time_spent;
     start_time = clock();
     Node *last = NULL;
-    while (!isQueueEmpty(queue)) {
-        QueueNode *current = dequeue(queue);
-        // printMaze(maze, row, column, current->node);
+    if (mode == 1) {
+        while (!isQueueEmpty(queue)) {
+            QueueNode *current = dequeue(queue);
 
-        if (current->node->pos.x == end.x && current->node->pos.y == end.y) {
-            if (shortest == 0) {
-                shortest = 1;
-                s_time = clock();
-                printf("Shortest path |Length = %d| : ", pathLen(current->node));
-                printPath(current->node);
-                printf("\n");
-                time_spent = (double)(s_time - start_time)/CLOCKS_PER_SEC;
-                printf("Time to find shortest path: %f\n", time_spent);
+            if (current->node->pos.x == end.x && current->node->pos.y == end.y) {
+                if (shortest == 0) {
+                    shortest = 1;
+                    s_time = clock();
+                    printf("Shortest path |Length = %d| : ", pathLen(current->node));
+                    printPath(current->node);
+                    printf("\n");
+                    time_spent = (double)(s_time - start_time)/CLOCKS_PER_SEC;
+                    printf("Time to find shortest path: %f\n", time_spent);
+                }
+                last = current->node;
+                fprintf(allPath, "Length = %d | ", pathLen(current->node));
+                writePathToFile(allPath, current->node);
+                fprintf(allPath, "\n");
+                count++;
             } else {
-                // printPath(current->node);
+                traverse(queue, current->node, maze, row, column);
             }
-            last = current->node;
-            // printPath(current->node);
-            // printf("%d ", pathLen(current->node));
-            // fprintf(allPath, "Length = %d | ", pathLen(current->node));
-            // writePathToFile(allPath, current->node);
-            // fprintf(allPath, "\n");
-            count++;
-        } else {
-            traverse(queue, current->node, maze, row, column);
+            
+            free(current);
         }
-        
-        free(current);
+    } else if (mode == 2) {
+        while (!isQueueEmpty(queue)) {
+            QueueNode *current = dequeue(queue);
+
+            if (current->node->pos.x == end.x && current->node->pos.y == end.y) {
+                if (shortest == 0) {
+                    shortest = 1;
+                    s_time = clock();
+                    printf("Shortest path |Length = %d| : ", pathLen(current->node));
+                    printPath(current->node);
+                    printf("\n");
+                    time_spent = (double)(s_time - start_time)/CLOCKS_PER_SEC;
+                    printf("Time to find shortest path: %f\n", time_spent);
+                } else {
+                    printf("Length = %d | ", pathLen(current->node));
+                    printPath(current->node);
+                    printf("\n");
+                }
+                last = current->node;
+                count++;
+            } else {
+                traverse(queue, current->node, maze, row, column);
+            }
+            
+            free(current);
+        }
+    } else {
+        while (!isQueueEmpty(queue)) {
+            QueueNode *current = dequeue(queue);
+            printMaze(maze, row, column, current->node);
+
+            if (current->node->pos.x == end.x && current->node->pos.y == end.y) {
+                if (shortest == 0) {
+                    shortest = 1;
+                    s_time = clock();
+                    time_spent = (double)(s_time - start_time)/CLOCKS_PER_SEC;
+                    printf("Time to find shortest path: %f\n", time_spent);
+                }
+                last = current->node;
+                count++;
+            } else {
+                traverse(queue, current->node, maze, row, column);
+            }
+            
+            free(current);
+        }
     }
+    
     l_time = clock();
 
     if (last != NULL) {
