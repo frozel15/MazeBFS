@@ -3,11 +3,10 @@
 
 int main() {
     // char *namafile = "Maze1.txt";
-
     char namafile[10];
     printf("Masukkan nama file: ");
     scanf("%s", namafile);
-
+    clock_t s_time = clock();
     int row = 0, column = 0;
     if (getRowColumn(namafile, &row, &column)) {
         return 1;
@@ -30,7 +29,8 @@ int main() {
     system("cls");
 
     solveBFS(queue, maze, row, column, end);
-    
+    clock_t e_time = clock();
+    printf("True time spent: %f\n", (double)(e_time-s_time)/CLOCKS_PER_SEC);
     printf("Press any key to close program...");
     getch();
     return 0;

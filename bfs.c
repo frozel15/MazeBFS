@@ -60,7 +60,7 @@ int getRowColumn(const char *filename, int *row, int *column) {
             if (length != (*column)) {
                 if (length == (*column)-1) {
                     if (line[length] == line[(*column)-1]) {
-                        switch (line[*column]) {
+                        switch (line[*column-1]) {
                             case 'S':
                                 break;
                             case 'E':
@@ -70,6 +70,7 @@ int getRowColumn(const char *filename, int *row, int *column) {
                             case '.':
                                 break;
                             default:
+                                printf("%d %d\n", line[length], line[*column]);
                                 printf("Terdapat elemen lain di maze.");
                                 fclose(file);
                                 return 1;
@@ -310,12 +311,15 @@ void solveBFS(Queue *queue, int **maze, int row, int column, Coords end) {
                 printf("\n");
                 time_spent = (double)(s_time - start_time)/CLOCKS_PER_SEC;
                 printf("Time to find shortest path: %f\n", time_spent);
+            } else {
+                printPath(current->node);
             }
             last = current->node;
+            // printPath(current->node);
             // printf("%d ", pathLen(current->node));
-            fprintf(allPath, "Length = %d | ", pathLen(current->node));
-            writePathToFile(allPath, current->node);
-            fprintf(allPath, "\n");
+            // fprintf(allPath, "Length = %d | ", pathLen(current->node));
+            // writePathToFile(allPath, current->node);
+            // fprintf(allPath, "\n");
             count++;
         } else {
             traverse(queue, current->node, maze, row, column);
